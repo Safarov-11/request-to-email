@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Domain.DTOs;
 using Domain.Entites;
 using Infrastructure.Interfaces;
@@ -20,8 +21,10 @@ public class AuthenticationService(
 {
     public async Task<IdentityResult> RegisterAsync(RegisterDTO register)
     {
+
         var user = new IdentityUser { UserName = register.Username, Email = register.Email };
         var result = await userManager.CreateAsync(user, register.Password);
+        await userManager.AddToRoleAsync(user, "Student");
         return result;
     }
 
@@ -33,16 +36,20 @@ public class AuthenticationService(
         var result = await userManager.CheckPasswordAsync(user, login.Password);
         return !result
             ? null
-            : GenerateJwtToken(user);
+            : await GenerateJwtToken(user);
     }
 
-    private string GenerateJwtToken(IdentityUser user)
+    private async Task<string> GenerateJwtToken(IdentityUser user)
     {
+        var roles = await userManager.GetRolesAsync(user);
         var claims = new List<Claim>()
             {
                 new (ClaimTypes.NameIdentifier, user.Id),
                 new (ClaimTypes.Name, user.UserName!)
             };
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        
 
         var secretKey = config["Jwt:Key"]!;
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -57,6 +64,8 @@ public class AuthenticationService(
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+
 
     public async Task<bool> ChangePasswordAsync(ChangePasswordDTO change)
     {
@@ -79,7 +88,7 @@ public class AuthenticationService(
         }
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
-        await emailService.SendResetPasswordEmailAsync(email, token);
+        await emailService.SendResetPasswordEmailAsync(email, token); //vizivaem tot metod kotoriy mi napisali i on otpravit na email token
 
         return true;
     }

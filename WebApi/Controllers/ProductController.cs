@@ -10,6 +10,7 @@ namespace WebApi.Controllers;
 [Route("api/[controller]")]
 public class ProductController(IProductService service) : ControllerBase
 {
+    [Authorize(Roles = "Admin, Mentor")]
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await service.GetAllAsync());
 

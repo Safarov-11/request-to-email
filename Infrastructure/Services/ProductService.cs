@@ -2,6 +2,7 @@ using Domain.DTOs;
 using Domain.Entites;
 using Infrastructure.Data;
 using Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;

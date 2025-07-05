@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Infrastructure.Data;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using Infrastructure.Seeds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +100,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+
+var scope = app.Services.CreateAsyncScope();
+var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+await DefaultRoless.SeedRoleAsync(roleManager);
+await DefaultUsers.SeedUserAsync(userManager);
+
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())

@@ -15,10 +15,10 @@ public class EmailService(IConfiguration config) : IEmailService
         var subject = "Reset Password"; //temai email
         var body = $"your code for reseting password: {token}"; //texti email
 
-        var smtpClient = new SmtpClient
+        var smtpClient = new SmtpClient 
         {
             Host = "smtp.gmail.com",
-            Port = 587,
+            Port = 587, //
             EnableSsl = true, //baroi soedinenra shifr kardan (obyazatelno!)
             Credentials = new NetworkCredential(fromEmail, fromPassword) //aftorizatsiya
         };

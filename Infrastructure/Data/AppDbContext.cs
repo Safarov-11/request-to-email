@@ -7,6 +7,5 @@ namespace Infrastructure.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext(options)
 {
     public DbSet<Product> Products { get; set; }
-    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 }
     
